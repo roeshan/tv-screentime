@@ -169,4 +169,9 @@ buttons can't get past it. The app has no internet permission, and the PIN is st
 
 ## License
 
-[MIT](LICENSE)
+[PolyForm Noncommercial 1.0.0](LICENSE). Free to use, change and share for any noncommercial purpose: at home,
+for your family, for learning or research, and in schools, charities and other noncommercial organisations.
+Selling it, bundling it into a paid product or service, or other commercial use needs separate permission;
+open an issue to ask.
+
+The Gradle wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/`) is Gradle's, under the Apache License 2.0.

@@ -22,9 +22,9 @@ and let it do the install.
 - **Remote or touch.** On a TV everything works with the D-pad and number keys; on a phone or tablet, tap.
 - **English and Indonesian**, following the system language.
 
-Runs on Android 11 or newer: Android TV, Google TV, and Android phones and tablets. **LG (webOS), Samsung (Tizen)
-and Fire TV's home screen are not Android in the way this needs**, so the APK doesn't work there; for LG see
-[LG webOS TVs](#lg-webos-tvs) below.
+Runs on Android 11 or newer: Android TV, Google TV, and Android phones and tablets. **LG (webOS) and Samsung
+(Tizen) TVs aren't Android**, so the APK doesn't work there; for LG see [LG webOS TVs](#lg-webos-tvs) below.
+Fire TV runs an Android-based system but hasn't been tried.
 
 ## Install with a coding agent
 

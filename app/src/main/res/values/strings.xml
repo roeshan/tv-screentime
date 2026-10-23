@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TV Screen Time</string>
+    <string name="service_desc">Counts watch time in video and Live TV apps, and locks the TV with a PIN when the daily quota runs out.</string>
+
+    <!-- Lock overlay -->
+    <string name="lock_expired_title">Time\'s up for today</string>
+    <string name="lock_expired_sub">Enter the PIN to keep watching</string>
+    <string name="lock_gate_title">PIN required</string>
+    <string name="lock_gate_sub">This menu is locked by TV Screen Time</string>
+    <string name="pin_wrong">Wrong PIN</string>
+    <string name="pin_lockout">Too many attempts. Wait %d seconds</string>
+    <string name="continue_title">Keep watching?</string>
+    <string name="quota_today">Today\'s quota: %d min</string>
+    <string name="add_minutes">Add %d minutes</string>
+    <string name="off_today">Turn off the limit for today</string>
+    <string name="pin_ok">PIN correct</string>
+    <string name="settings_unlocked">Settings unlock for 10 minutes</string>
+    <string name="open">Open</string>
+    <string name="cancel">Cancel</string>
+    <plurals name="minutes_left">
+        <item quantity="one">%d minute of watch time left</item>
+        <item quantity="other">%d minutes of watch time left</item>
+    </plurals>
+
+    <!-- Setup screen -->
+    <string name="verify_sub">Enter the PIN</string>
+    <string name="create_title">Create a new PIN</string>
+    <string name="create_sub">4 digits, used to unlock the TV</string>
+    <string name="confirm_title">Repeat the PIN</string>
+    <string name="confirm_sub">Enter the same PIN once more</string>
+    <string name="pin_mismatch">PINs don\'t match, start over</string>
+    <string name="weekday_quota">Mon–Fri: %d min   ◀ ▶</string>
+    <string name="weekend_quota">Sat–Sun: %d min   ◀ ▶</string>
+    <string name="limit_today">Limit today: %s</string>
+    <string name="state_on">ON</string>
+    <string name="state_off">OFF</string>
+    <string name="reset_today">Reset today\'s usage</string>
+    <string name="change_pin">Change PIN</string>
+    <string name="exit">Exit</string>
+    <string name="status">Today: %1$d min used · %2$d min left · service %3$s</string>
+    <string name="service_on">on</string>
+    <string name="service_off">NOT ON</string>
+</resources>

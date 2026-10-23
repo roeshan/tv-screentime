@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pembatas TV</string>
+    <string name="service_desc">Menghitung waktu nonton aplikasi video dan Live TV, lalu mengunci TV dengan PIN saat kuota harian habis.</string>
+
+    <!-- Lock overlay -->
+    <string name="lock_expired_title">Waktu nonton hari ini habis</string>
+    <string name="lock_expired_sub">Masukkan PIN untuk lanjut</string>
+    <string name="lock_gate_title">Butuh PIN</string>
+    <string name="lock_gate_sub">Menu ini dikunci Pembatas TV</string>
+    <string name="pin_wrong">PIN salah</string>
+    <string name="pin_lockout">Terlalu banyak salah. Tunggu %d detik</string>
+    <string name="continue_title">Lanjut nonton?</string>
+    <string name="quota_today">Kuota hari ini %d menit</string>
+    <string name="add_minutes">Tambah %d menit</string>
+    <string name="off_today">Matikan pembatas hari ini</string>
+    <string name="pin_ok">PIN benar</string>
+    <string name="settings_unlocked">Pengaturan terbuka 10 menit</string>
+    <string name="open">Buka</string>
+    <string name="cancel">Batal</string>
+    <plurals name="minutes_left">
+        <item quantity="other">Sisa waktu nonton %d menit</item>
+    </plurals>
+
+    <!-- Setup screen -->
+    <string name="verify_sub">Masukkan PIN</string>
+    <string name="create_title">Buat PIN baru</string>
+    <string name="create_sub">4 angka, untuk membuka kunci TV</string>
+    <string name="confirm_title">Ulangi PIN</string>
+    <string name="confirm_sub">Masukkan PIN yang sama sekali lagi</string>
+    <string name="pin_mismatch">PIN tidak sama, ulangi dari awal</string>
+    <string name="weekday_quota">Senin–Jumat: %d menit   ◀ ▶</string>
+    <string name="weekend_quota">Sabtu–Minggu: %d menit   ◀ ▶</string>
+    <string name="limit_today">Pembatas hari ini: %s</string>
+    <string name="state_on">AKTIF</string>
+    <string name="state_off">MATI</string>
+    <string name="reset_today">Reset pemakaian hari ini</string>
+    <string name="change_pin">Ganti PIN</string>
+    <string name="exit">Keluar</string>
+    <string name="status">Hari ini terpakai %1$d mnt · sisa %2$d mnt · layanan %3$s</string>
+    <string name="service_on">aktif</string>
+    <string name="service_off">BELUM AKTIF</string>
+</resources>

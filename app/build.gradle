@@ -1,0 +1,29 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'io.github.roeshan.tvscreentime'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'io.github.roeshan.tvscreentime'
+        minSdk 30
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            // Sideloaded over ADB only, so the debug key is enough.
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

@@ -1,14 +1,16 @@
 package io.github.roeshan.tvscreentime;
 
 import android.content.Context;
+import android.view.View;
 import android.view.KeyEvent;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
- * A 4-digit PIN entry driven entirely by key codes, so it works both inside an activity and in an
- * accessibility overlay that never takes focus. D-pad moves over the keypad; number keys type directly.
+ * A 4-digit PIN entry for both a TV remote and a touchscreen. Keys arrive through onKey, so it also works in an
+ * accessibility overlay that never takes focus: D-pad moves over the keypad and number keys type directly. On a
+ * phone or tablet the keys are simply tapped.
  */
 final class PinPad {
     interface Listener { void onPin(String pin); }
@@ -19,10 +21,11 @@ final class PinPad {
     final LinearLayout root;
     private final Context c;
     private final Listener listener;
-    private final TextView title, subtitle, dots;
+    private final TextView title, subtitle, dots, cancel;
     private final TextView[] cells = new TextView[KEYS.length];
     private final StringBuilder pin = new StringBuilder();
     private int focus = 4;
+    private Runnable onCancel;
 
     PinPad(Context c, Listener listener) {
         this.c = c;
@@ -48,6 +51,12 @@ final class PinPad {
         for (int i = 0; i < KEYS.length; i++) {
             TextView t = Ui.text(c, 24, Ui.TEXT);
             t.setText(KEYS[i]);
+            int index = i;
+            t.setOnClickListener(v -> {
+                focus = index;
+                press(KEYS[index]);
+                render();
+            });
             GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
             lp.width = Ui.dp(c, 92);
             lp.height = Ui.dp(c, 58);
@@ -57,6 +66,19 @@ final class PinPad {
         }
         root.addView(grid, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        // A way out by touch where Back is allowed; on a remote, Back does the same.
+        cancel = Ui.text(c, 18, Ui.DIM);
+        int p = Ui.dp(c, 12);
+        cancel.setPadding(p * 2, p, p * 2, p);
+        cancel.setOnClickListener(v -> {
+            if (onCancel != null) onCancel.run();
+        });
+        cancel.setVisibility(View.GONE);
+        LinearLayout.LayoutParams cancelLp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        cancelLp.topMargin = Ui.dp(c, 8);
+        root.addView(cancel, cancelLp);
         render();
     }
 
@@ -64,6 +86,13 @@ final class PinPad {
         title.setText(t);
         subtitle.setText(sub);
         subtitle.setTextColor(Ui.DIM);
+    }
+
+    /** Shows a tappable cancel link under the keypad; null hides it. */
+    void setCancel(String label, Runnable action) {
+        onCancel = action;
+        cancel.setText(label);
+        cancel.setVisibility(action == null ? View.GONE : View.VISIBLE);
     }
 
     void reset() {

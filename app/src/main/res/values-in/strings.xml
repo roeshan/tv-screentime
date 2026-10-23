@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Pembatas TV</string>
-    <string name="service_desc">Menghitung waktu nonton aplikasi video dan Live TV, lalu mengunci TV dengan PIN saat kuota harian habis.</string>
+    <string name="service_desc">Menghitung waktu nonton aplikasi video dan Live TV, lalu mengunci layar dengan PIN saat kuota harian habis.</string>
 
     <!-- Lock overlay -->
     <string name="lock_expired_title">Waktu nonton hari ini habis</string>
@@ -25,12 +25,12 @@
     <!-- Setup screen -->
     <string name="verify_sub">Masukkan PIN</string>
     <string name="create_title">Buat PIN baru</string>
-    <string name="create_sub">4 angka, untuk membuka kunci TV</string>
+    <string name="create_sub">4 angka, untuk membuka kunci layar</string>
     <string name="confirm_title">Ulangi PIN</string>
     <string name="confirm_sub">Masukkan PIN yang sama sekali lagi</string>
     <string name="pin_mismatch">PIN tidak sama, ulangi dari awal</string>
-    <string name="weekday_quota">Senin–Jumat: %d menit   ◀ ▶</string>
-    <string name="weekend_quota">Sabtu–Minggu: %d menit   ◀ ▶</string>
+    <string name="weekday_quota">Senin–Jumat: %d menit</string>
+    <string name="weekend_quota">Sabtu–Minggu: %d menit</string>
     <string name="limit_today">Pembatas hari ini: %s</string>
     <string name="state_on">AKTIF</string>
     <string name="state_off">MATI</string>

@@ -1,43 +1,49 @@
 # TV Screen Time
 
-A daily watch-time limit for Android TV and Google TV, locked with a PIN. No root, no account, no internet
-permission. Install it over ADB (Wi-Fi or USB), or hand this repo to your coding agent and let it do the install.
+A daily screen-time limit for Android TV, Google TV, and Android phones and tablets, locked with a PIN. No root,
+no account, no internet permission. Install it over ADB (Wi-Fi or USB), or hand this repo to your coding agent
+and let it do the install.
 
 - **Daily quota.** 20 minutes on weekdays and 2 hours on weekends by default, reset at midnight. Both are
-  changeable on the TV.
-- **Only watching counts.** Time is counted only while the screen is on and a video or Live TV app is in front
-  (YouTube, Netflix, Jellyfin, Plex, Live TV and HDMI, and others; see [`Apps.java`](app/src/main/java/io/github/roeshan/tvscreentime/Apps.java)).
-  Menus, the launcher and background apps such as a VPN don't count.
+  changeable on the device.
+- **Only watching counts.** Time is counted only while the screen is on and a video or Live TV app is in front:
+  YouTube, Netflix, Jellyfin, Plex, Live TV and HDMI on a TV, YouTube, Netflix and TikTok on a phone, and others
+  (see [`Apps.java`](app/src/main/java/io/github/roeshan/tvscreentime/Apps.java)). Menus, the launcher and
+  background apps such as a VPN don't count.
 - **Warnings** at 5 minutes and 1 minute left.
 - **When time runs out:** playback pauses, sound mutes, and a full-screen PIN lock covers everything, including
-  HDMI and Live TV. With nobody at the PIN for 60 seconds the TV goes to standby, and it comes back to the PIN lock
+  HDMI and Live TV. With nobody at the PIN for 60 seconds the device goes to standby, and the PIN lock is back
   when it is switched on again.
 - **After the PIN:** add 15, 30 or 60 minutes for today, or turn the limit off for the rest of the day.
-- **Hard to get around.** Home, Back and the app buttons on the remote do nothing while the lock is up. Settings
-  and the Play Store need the PIN, so the limiter can't be switched off, cleared or uninstalled from the TV.
-  Usage is saved as it happens, so pulling the plug doesn't reset it. Five wrong PINs lock entry for a minute.
-- **English and Indonesian**, following the TV's system language.
+- **Hard to get around.** Home, Back and the app buttons on a remote do nothing while the lock is up. Settings,
+  the Play Store and the uninstall dialog need the PIN, so the limiter can't be switched off, cleared or
+  uninstalled on the device. Usage is saved as it happens, so pulling the plug doesn't reset it. Five wrong PINs
+  lock entry for a minute.
+- **Remote or touch.** On a TV everything works with the D-pad and number keys; on a phone or tablet, tap.
+- **English and Indonesian**, following the system language.
 
 ## Install with a coding agent
 
-You need a computer on the same Wi-Fi as the TV (or a USB cable to it) and a coding agent with shell access,
-such as Claude Code, Codex or Gemini CLI.
+You need a computer and a coding agent with shell access, such as Claude Code, Codex or Gemini CLI. The computer
+connects to the device over Wi-Fi (same network) or a USB cable.
 
-1. **On the TV**, open Settings → System → About (on some TVs Device Preferences → About), press OK on
-   **Build** seven times, go back to **Developer options** and turn on **USB debugging**. Then turn on one of
-   these, whichever your TV has:
-   - **Wireless debugging** (Google TV, Android 11 and newer)
-   - **Network debugging** / **ADB over network** (older Android TV)
-   - or plug a USB cable from the computer into the TV, if its USB port supports debugging (common on sticks and
-     projectors, rare on TV sets)
+1. **On the device**, turn on developer options and debugging:
+   - **TV:** Settings → System → About (on some TVs Device Preferences → About), press OK on **Build** seven
+     times. In **Developer options**, turn on **USB debugging**, then **Wireless debugging** (Google TV,
+     Android 11+) or **Network debugging** (older Android TV). A USB cable works too if the TV's USB port supports
+     debugging (common on sticks and projectors, rare on TV sets).
+   - **Phone or tablet:** Settings → About phone, tap **Build number** seven times (on Xiaomi: **MIUI/OS
+     version**). In **Developer options**, turn on **USB debugging** and plug in a cable, or turn on **Wireless
+     debugging**.
 2. **On your computer**, give your agent this prompt:
 
-   > Install TV Screen Time on my Android TV from https://github.com/roeshan/tv-screentime. Follow AGENTS.md in
-   > that repo. My TV is a `<brand and model>`, its IP address is `<IP shown in Settings → Network>`, and I
-   > connect with `<Wireless debugging / Network debugging / USB>`.
+   > Install TV Screen Time from https://github.com/roeshan/tv-screentime on my `<TV / phone / tablet>`. Follow
+   > AGENTS.md in that repo. It's a `<brand and model>`, and I connect with `<Wireless debugging / Network
+   > debugging / USB>`. Its IP address is `<IP, for Wi-Fi only>`.
 
-3. **Follow along.** Accept "Allow debugging?" on the TV, read out the pairing code when asked, tell the agent
-   which apps should count, and create your PIN on the TV when it says so. Don't type the PIN into the chat.
+3. **Follow along.** Accept "Allow debugging?" on the device, read out the pairing code when asked, tell the
+   agent which apps should count, and create your PIN on the device when it says so. Don't type the PIN into the
+   chat.
 
 The agent's step-by-step guide is [AGENTS.md](AGENTS.md).
 
@@ -45,22 +51,22 @@ The agent's step-by-step guide is [AGENTS.md](AGENTS.md).
 
 You need [Android platform-tools](https://developer.android.com/tools/releases/platform-tools) (`adb`).
 
-**1. Connect to the TV**, with one of these:
+**1. Connect to the device**, with one of these:
 
 ```bash
-# Wireless debugging (Google TV / Android 11+): pair once with the code shown on the TV, then connect.
-# The pairing port and the connect port are different; both are on the TV's Wireless debugging screen.
-adb pair <tv-ip>:<pairing-port> <6-digit-code>
-adb connect <tv-ip>:<connect-port>
+# Wireless debugging (Google TV, phones and tablets, Android 11+): pair once with the code shown on the device,
+# then connect. The pairing port and the connect port are different; both are on the Wireless debugging screen.
+adb pair <ip>:<pairing-port> <6-digit-code>
+adb connect <ip>:<connect-port>
 
 # Network debugging (older Android TV)
-adb connect <tv-ip>:5555
+adb connect <ip>:5555
 
 # USB
 adb devices
 ```
 
-`adb devices` should list the TV as `device`. Accept the prompt on the TV if it says `unauthorized`.
+`adb devices` should list the device as `device`. Accept the prompt on the device if it says `unauthorized`.
 
 **2. Install.** Either take the prebuilt APK:
 
@@ -77,15 +83,15 @@ or build from source. This needs JDK 17 and an Android SDK; on macOS:
 scripts/install.sh
 ```
 
-The script installs the app, turns on its accessibility service without touching any others, and checks that
-Android started it.
+The script installs the app, turns on its accessibility service without touching any others, takes it off
+battery optimisation, and checks that Android started it.
 
-**3. On the TV**, open **TV Screen Time** (shown as **Pembatas TV** in Indonesian) from the app list and create a
-4-digit PIN. Nothing is limited until a PIN exists.
+**3. On the device**, open **TV Screen Time** (shown as **Pembatas TV** in Indonesian) from the app list and
+create a 4-digit PIN. Nothing is limited until a PIN exists.
 
 ## Using it
 
-Open the app on the TV and enter the PIN to:
+Open the app and enter the PIN to:
 
 - set the weekday and weekend quota (◀ ▶)
 - turn the limit off or on for today
@@ -112,23 +118,37 @@ lock showing:   false
 Changing the quota keeps the time already used. Usage goes back to zero at midnight or with **Reset today's
 usage**, which also drops any minutes added from the lock screen that day.
 
+## On phones and tablets
+
+The same app and the same install. A few things behave differently from a TV:
+
+- **Phone calls are never blocked.** The lock steps aside while a call is ringing or going on, and comes back
+  afterwards. Time in a call doesn't count.
+- **The system lock screen comes first.** After the device locks, the PIN lock only shows again once it is
+  unlocked, so emergency calls from the lock screen keep working.
+- **Settings needs the PIN.** That covers Wi-Fi and every other setting, not only this app's. The quick settings
+  tiles in the notification shade still work. After the PIN, Settings stays open for 10 minutes.
+- **Xiaomi, Oppo, Vivo, Realme** and some others stop background apps on their own. If the limit stops counting
+  after a reboot, allow **Autostart** for TV Screen Time in the device's app settings, then run
+  `scripts/install.sh` again.
+
 ## Which apps count
 
 Edit [`Apps.java`](app/src/main/java/io/github/roeshan/tvscreentime/Apps.java), then run `scripts/install.sh` again.
 Your PIN and today's usage are kept.
 
-- `TRACKED`: apps whose screen time counts. To find an app's package, open it on the TV and run
-  `adb shell dumpsys window | grep mCurrentFocus`. Do the same with Live TV and an HDMI input open, because
-  every TV brand uses a different Live TV app.
+- `TRACKED`: apps whose screen time counts. To find an app's package, open it on the device and run
+  `adb shell dumpsys window | grep mCurrentFocus`. On a TV, do the same with Live TV and an HDMI input open,
+  because every brand uses a different Live TV app. Games and other apps can be added the same way.
 - `GATED`: apps that need the PIN to open. Add your VPN app here if it shouldn't be switched off.
 - `IGNORED`: windows that sit on top of an app without replacing it, such as the keyboard and system UI.
 
 ## Forgot the PIN, or want it gone
 
-These need the computer that has ADB access to the TV:
+These need the computer that has ADB access to the device:
 
 ```bash
-# Forget the PIN and all usage, then switch the service back on and set a new PIN on the TV
+# Forget the PIN and all usage, then switch the service back on and set a new PIN on the device
 adb shell pm clear io.github.roeshan.tvscreentime
 scripts/install.sh tv-screentime.apk    # or scripts/install.sh to build
 
@@ -138,13 +158,13 @@ adb uninstall io.github.roeshan.tvscreentime
 
 ## Limits
 
-- Anyone with ADB access to the TV (a paired computer, or a USB cable with USB debugging on) can switch it off.
-  So can a factory reset. Turn off Wireless debugging on the TV once you're done if that matters.
+- Anyone with ADB access to the device (a paired computer, or a USB cable with USB debugging on) can switch it
+  off. So can a factory reset. Turn off Wireless debugging and USB debugging once you're done if that matters.
 - Android may stop the accessibility service when the app is updated. `scripts/install.sh` turns it back on.
-- Standby after the 60-second timeout uses Android's lock-screen action. A few vendor firmwares may only blank
-  the screen instead.
+- Standby after the 60-second timeout uses Android's lock-screen action. A few TV firmwares may only blank the
+  screen instead.
 - Tested so far on one TV, a Motorola SWTV-24AE-FHD (Skyworth, MediaTek, Google TV 14): time counting and the
-  PIN lock pausing YouTube. Reports from other TVs are welcome.
+  PIN lock pausing YouTube. Phone and tablet support is new and not yet tested on a device. Reports are welcome.
 
 ## Optional: debloat the TV for better performance
 
@@ -164,7 +184,7 @@ It's separate from this project and entirely optional. If you use both:
 
 The app is an accessibility service. Every 5 seconds it checks which app is on screen and whether the screen is
 on, and adds the time to today's total when the app is in `TRACKED`. The lock is an accessibility overlay drawn
-above every window. The remote's keys are read through the service's key filter, which is why Home and the app
+above every window. A remote's keys are read through the service's key filter, which is why Home and the app
 buttons can't get past it. The app has no internet permission, and the PIN is stored as a salted SHA-256 hash.
 
 ## License

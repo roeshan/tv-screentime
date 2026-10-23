@@ -65,7 +65,7 @@ public class SetupActivity extends Activity {
                 break;
         }
         frame.removeAllViews();
-        frame.addView(content, Ui.centered(this));
+        frame.addView(Ui.column(this, content));
     }
 
     private void onPin(String pin) {

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Build TV Screen Time, install it on the TV that adb is connected to, and switch on its accessibility service.
+# Build TV Screen Time, install it on the TV, phone or tablet that adb is connected to, and switch on its accessibility service.
 # Safe to run again: it reinstalls over the old build (usage and PIN are kept) and re-enables the service.
 #
 #   scripts/install.sh                          # build from source, install on the only device adb sees
 #   scripts/install.sh path/to/tv-screentime.apk # install a prebuilt APK (from GitHub Releases), no build
 #   ANDROID_SERIAL=<ip:port or serial> scripts/install.sh
 #
-# The TV can be connected over Wi-Fi (Wireless debugging or Network debugging) or a USB cable; see README.
+# The device can be connected over Wi-Fi (Wireless debugging or Network debugging) or a USB cable; see README.
 set -euo pipefail
 
 APK=${1:-}
@@ -19,12 +19,12 @@ SERVICE=$PKG/.LimitService
 
 die() { echo "ERROR: $*" >&2; exit 1; }
 
-# 1. A TV must answer over adb.
+# 1. A device must answer over adb.
 command -v adb >/dev/null || die "adb not found. Install Android platform-tools (macOS: brew install --cask android-platform-tools)."
 STATE=$(adb get-state 2>/dev/null || true)
-[ "$STATE" = device ] || die "no TV connected (adb get-state: '${STATE:-none}'). Pair and connect first, see README."
+[ "$STATE" = device ] || die "no device connected (adb get-state: '${STATE:-none}'). Pair and connect first, see README."
 SDK=$(adb shell getprop ro.build.version.sdk | tr -dc '0-9')
-[ "${SDK:-0}" -ge 30 ] || die "the TV runs Android SDK $SDK; this app needs Android 11 (SDK 30) or newer."
+[ "${SDK:-0}" -ge 30 ] || die "the device runs Android SDK $SDK; this app needs Android 11 (SDK 30) or newer."
 
 # 2. Build with JDK 17 and an Android SDK, unless a prebuilt APK was given.
 if [ -n "$APK" ]; then
@@ -49,7 +49,7 @@ fi
 
 # 3. Install over any previous build.
 adb install -r "$APK" || die "install failed. INSTALL_FAILED_UPDATE_INCOMPATIBLE means an older build signed with a
-different key is on the TV: run 'adb uninstall $PKG' (this deletes the PIN and today's usage) and try again."
+different key is on the device: run 'adb uninstall $PKG' (this deletes the PIN and today's usage) and try again."
 
 # 4. Enable the service without dropping other accessibility services (a launcher's key helpers, for example).
 #    Android drops a service from its bound list when its APK is replaced, so clear and rewrite the list to rebind.
@@ -63,6 +63,8 @@ adb shell "settings put secure enabled_accessibility_services ''; settings put s
 sleep 1
 adb shell "settings put secure enabled_accessibility_services '$LIST'; settings put secure accessibility_enabled 1"
 sleep 3
+# Keep it off battery optimisation, which some phone vendors use to stop background services.
+adb shell dumpsys deviceidle whitelist +"$PKG" >/dev/null 2>&1 || true
 
 # 5. Check that Android bound it.
 if adb shell dumpsys activity service "$SERVICE" | grep -q "pin set:"; then
@@ -70,7 +72,7 @@ if adb shell dumpsys activity service "$SERVICE" | grep -q "pin set:"; then
   adb shell dumpsys activity service "$SERVICE" | sed -n '/pin set:/,$p'
   echo
   echo "Installed and running."
-  echo "Next, on the TV: open 'TV Screen Time' (or 'Pembatas TV') from the app list and create a 4-digit PIN."
+  echo "Next, on the device: open 'TV Screen Time' (or 'Pembatas TV') from the app list and create a 4-digit PIN."
   echo "Nothing is limited until a PIN exists."
 else
   die "installed, but the accessibility service is not running. Check: adb shell dumpsys accessibility | grep -A3 'Bound services'"

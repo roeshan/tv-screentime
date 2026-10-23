@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TV Screen Time</string>
-    <string name="service_desc">Counts watch time in video and Live TV apps, and locks the TV with a PIN when the daily quota runs out.</string>
+    <string name="service_desc">Counts watch time in video and Live TV apps, and locks the screen with a PIN when the daily quota runs out.</string>
 
     <!-- Lock overlay -->
     <string name="lock_expired_title">Time\'s up for today</string>
@@ -26,12 +26,12 @@
     <!-- Setup screen -->
     <string name="verify_sub">Enter the PIN</string>
     <string name="create_title">Create a new PIN</string>
-    <string name="create_sub">4 digits, used to unlock the TV</string>
+    <string name="create_sub">4 digits, used to unlock the screen</string>
     <string name="confirm_title">Repeat the PIN</string>
     <string name="confirm_sub">Enter the same PIN once more</string>
     <string name="pin_mismatch">PINs don\'t match, start over</string>
-    <string name="weekday_quota">Mon–Fri: %d min   ◀ ▶</string>
-    <string name="weekend_quota">Sat–Sun: %d min   ◀ ▶</string>
+    <string name="weekday_quota">Mon–Fri: %d min</string>
+    <string name="weekend_quota">Sat–Sun: %d min</string>
     <string name="limit_today">Limit today: %s</string>
     <string name="state_on">ON</string>
     <string name="state_off">OFF</string>

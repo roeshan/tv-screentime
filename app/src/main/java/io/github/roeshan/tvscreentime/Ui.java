@@ -2,9 +2,13 @@ package io.github.roeshan.tvscreentime;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 final class Ui {
@@ -18,9 +22,26 @@ final class Ui {
 
     private Ui() {}
 
-    /** The PIN pad and menus sit in a fixed-width column centred on screen. */
-    static FrameLayout.LayoutParams centered(Context c) {
-        return new FrameLayout.LayoutParams(dp(c, 600), FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
+    /**
+     * Puts content in a column centred on screen: 600dp wide on a TV or tablet, the screen width less a margin on a
+     * phone, and scrollable where the screen is too short for it (a phone held sideways).
+     */
+    static View column(Context c, View content) {
+        if (content.getParent() instanceof ViewGroup) ((ViewGroup) content.getParent()).removeView(content);
+        DisplayMetrics dm = c.getResources().getDisplayMetrics();
+        int width = Math.min(dp(c, 600), dm.widthPixels - dp(c, 32));
+
+        FrameLayout centre = new FrameLayout(c);
+        int pad = dp(c, 16);
+        centre.setPadding(0, pad, 0, pad);
+        centre.addView(content, new FrameLayout.LayoutParams(width, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+
+        ScrollView scroll = new ScrollView(c);
+        scroll.setFillViewport(true);
+        scroll.setVerticalScrollBarEnabled(false);
+        scroll.addView(centre, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT));
+        return scroll;
     }
 
     static int dp(Context c, float v) {

@@ -1,12 +1,14 @@
 package io.github.roeshan.tvscreentime;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.KeyguardManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PixelFormat;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
@@ -27,9 +29,12 @@ import java.util.List;
 
 /**
  * Counts screen time in the tracked apps, warns before the daily quota runs out, then covers the whole
- * screen (apps, HDMI and Live TV alike) with a PIN lock and puts the TV to standby if nobody unlocks it.
+ * screen (apps, HDMI and Live TV alike) with a PIN lock and puts the device to standby if nobody unlocks it.
  * The lock lives in an accessibility overlay and reads the remote through onKeyEvent, so Home, Back and
- * the app buttons can't get around it.
+ * the app buttons can't get around it; on a phone or tablet it is used by touch.
+ *
+ * On a phone the lock stays out of the way of the system's own lock screen (so emergency calls work) and of
+ * phone calls: it shows only once the device is unlocked and no call is ringing or in progress.
  */
 public class LimitService extends AccessibilityService {
 
@@ -43,6 +48,7 @@ public class LimitService extends AccessibilityService {
     private WindowManager wm;
     private AudioManager audio;
     private PowerManager power;
+    private KeyguardManager keyguard;
 
     private String foreground = "";
     private long lastTick;
@@ -62,13 +68,16 @@ public class LimitService extends AccessibilityService {
     private final BroadcastReceiver screen = new BroadcastReceiver() {
         @Override
         public void onReceive(Context c, Intent i) {
-            if (Intent.ACTION_SCREEN_ON.equals(i.getAction())) {
-                lastTick = SystemClock.elapsedRealtime();
-                store.rollDay();
-                if (store.exhausted()) showLock(true);
-            } else {
+            if (Intent.ACTION_SCREEN_OFF.equals(i.getAction())) {
                 handler.removeCallbacks(standby);
+                // Shown again once the device is on and unlocked, so it never sits over the system lock screen.
+                if (showing && expiredMode) hideLock();
+                return;
             }
+            // SCREEN_ON (a TV, or a phone without a lock screen) or USER_PRESENT (a phone just unlocked).
+            lastTick = SystemClock.elapsedRealtime();
+            store.rollDay();
+            if (store.exhausted() && canLock()) showLock(true);
         }
     };
 
@@ -78,9 +87,18 @@ public class LimitService extends AccessibilityService {
         wm = getSystemService(WindowManager.class);
         audio = getSystemService(AudioManager.class);
         power = getSystemService(PowerManager.class);
+        keyguard = getSystemService(KeyguardManager.class);
         IntentFilter f = new IntentFilter(Intent.ACTION_SCREEN_ON);
         f.addAction(Intent.ACTION_SCREEN_OFF);
+        f.addAction(Intent.ACTION_USER_PRESENT);
         registerReceiver(screen, f);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // React to a ringing phone at once instead of on the next tick.
+            audio.addOnModeChangedListener(getMainExecutor(), mode -> {
+                handler.removeCallbacks(tick);
+                handler.post(tick);
+            });
+        }
         lastTick = SystemClock.elapsedRealtime();
         handler.post(tick);
     }
@@ -146,11 +164,12 @@ public class LimitService extends AccessibilityService {
         lastTick = now;
         store.rollDay();
 
-        // A new day (or more minutes set from the settings screen) lifts an expired lock by itself.
-        if (showing && expiredMode && !store.exhausted()) hideLock();
+        // A new day (or more minutes set from the settings screen) lifts an expired lock by itself, and a call or
+        // the system lock screen puts it aside until they are over.
+        if (showing && (!canLock() || (expiredMode && !store.exhausted()))) hideLock();
 
         String app = currentApp();
-        if (!showing && power.isInteractive() && store.active()) {
+        if (!showing && canLock() && store.active()) {
             if (Apps.TRACKED.contains(app)) {
                 store.addUsed(dt);
                 long left = store.remainingMs();
@@ -171,8 +190,16 @@ public class LimitService extends AccessibilityService {
         handler.postDelayed(tick, TICK_MS);
     }
 
+    /** The screen is on, unlocked, and no phone call is ringing or going on. */
+    private boolean canLock() {
+        if (!power.isInteractive() || keyguard.isKeyguardLocked()) return false;
+        int mode = audio.getMode();
+        return mode != AudioManager.MODE_RINGTONE && mode != AudioManager.MODE_IN_CALL
+                && mode != AudioManager.MODE_IN_COMMUNICATION && mode != AudioManager.MODE_CALL_SCREENING;
+    }
+
     private void checkGate(String app) {
-        if (showing || !store.hasPin() || !Apps.GATED.contains(app)) return;
+        if (showing || !store.hasPin() || !Apps.GATED.contains(app) || !canLock()) return;
         if (System.currentTimeMillis() < store.adminUntil()) return;
         showLock(false);
     }
@@ -191,8 +218,10 @@ public class LimitService extends AccessibilityService {
         pad.reset();
         if (expired) {
             pad.setTitle(getString(R.string.lock_expired_title), getString(R.string.lock_expired_sub));
+            pad.setCancel(null, null);
         } else {
             pad.setTitle(getString(R.string.lock_gate_title), getString(R.string.lock_gate_sub));
+            pad.setCancel(getString(R.string.cancel), this::leaveGate);
         }
         showContent(pad.root);
         if (!showing) {
@@ -219,7 +248,7 @@ public class LimitService extends AccessibilityService {
 
     private void showContent(View v) {
         lockView.removeAllViews();
-        lockView.addView(v, Ui.centered(this));
+        lockView.addView(Ui.column(this, v));
     }
 
     private void armStandby() {
@@ -262,8 +291,7 @@ public class LimitService extends AccessibilityService {
                 pad.reset();
                 showContent(pad.root);
             } else if (!expiredMode) {
-                hideLock();
-                performGlobalAction(GLOBAL_ACTION_HOME);
+                leaveGate();
             }
             return;
         }
@@ -297,12 +325,15 @@ public class LimitService extends AccessibilityService {
                         store.setAdminUntil(System.currentTimeMillis() + ADMIN_WINDOW_MS);
                         hideLock();
                     }),
-                    Menu.item(getString(R.string.cancel), () -> {
-                        hideLock();
-                        performGlobalAction(GLOBAL_ACTION_HOME);
-                    })));
+                    Menu.item(getString(R.string.cancel), this::leaveGate)));
         }
         showContent(menu.root);
+    }
+
+    /** Closes the PIN lock in front of Settings and goes Home instead. */
+    private void leaveGate() {
+        hideLock();
+        performGlobalAction(GLOBAL_ACTION_HOME);
     }
 
     private void grant(int minutes) {

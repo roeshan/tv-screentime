@@ -22,6 +22,10 @@ and let it do the install.
 - **Remote or touch.** On a TV everything works with the D-pad and number keys; on a phone or tablet, tap.
 - **English and Indonesian**, following the system language.
 
+Runs on Android 11 or newer: Android TV, Google TV, and Android phones and tablets. **LG (webOS), Samsung (Tizen)
+and Fire TV's home screen are not Android in the way this needs**, so the APK doesn't work there; for LG see
+[LG webOS TVs](#lg-webos-tvs) below.
+
 ## Install with a coding agent
 
 You need a computer and a coding agent with shell access, such as Claude Code, Codex or Gemini CLI. The computer
@@ -179,6 +183,17 @@ It's separate from this project and entirely optional. If you use both:
   accessibility services already turned on, such as the CleanYourTV launcher's remote-button helpers, and
   leaves them in place.
 - Keep `com.android.tv.settings` enabled. TV Screen Time uses it as the PIN-locked way into the TV settings.
+
+## LG webOS TVs
+
+LG TVs run webOS, not Android: they can't install an APK, have no ADB, and have no accessibility services, so
+TV Screen Time can't run on them. Two things that can help instead:
+
+- **A clean home screen without LG's ads:** [webos-vibehack](https://github.com/OmkarK97/webos-vibehack), the same
+  Apple TV-style launcher as CleanYourTV rebuilt as a webOS app. No root needed; it installs through LG's
+  Developer Mode. It's a separate community project, so follow its own README.
+- **PIN locks:** LG's own Settings → General → Safety (the name varies by webOS version) can lock chosen apps
+  and inputs behind a PIN. It isn't a daily quota: a locked app stays locked until the PIN is entered.
 
 ## How it works
 

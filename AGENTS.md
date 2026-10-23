@@ -30,6 +30,10 @@ what the app does.
   Kids, Netflix, Prime Video, Hotstar, Jellyfin, Vidio and TikTok on a phone. Games or other apps can be added.
 - The quota. Defaults are 20 min Mon–Fri and 120 min Sat–Sun; the user can change both on the device later.
 
+**LG (webOS) and Samsung (Tizen) TVs can't run this app**: they aren't Android. Tell the user, and for LG point
+them to the [LG webOS TVs](README.md#lg-webos-tvs) section of the README (the webos-vibehack launcher, and LG's
+own PIN locks). Don't try to install anything on them as part of this guide.
+
 ## 2. Get the tools
 
 - `adb`: check with `adb version`. macOS: `brew install --cask android-platform-tools`. Linux: the
